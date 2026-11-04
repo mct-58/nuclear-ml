@@ -26,7 +26,7 @@ cd nuclear-ml
 python -m venv .venv
 source .venv/bin/activate      # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
-python Stage1/particalInMagneticField/main.py
+python Stage1/particleInMagneticField/main.py
 ```
 
 Each script runs on its own and displays its plots.
