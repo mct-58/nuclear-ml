@@ -1,10 +1,10 @@
 # Nuclear x ML Project
 
-Learning about Nuclear physics and Machine Learning from scratch simultaneously and then combining them in a final project.
+Learning nuclear physics simulation and machine learning from scratch at the same time, then combining them in a final project.
 
 ## Overview
 
-4 stages of Physics simulations and 4 stages of Machine Learning progression done in parallel to finally merge them in a neural surrogate for reactor criticality. Everything written by hand from scratch with only NumPY and Matplotlib (plotting was assisted for time efficiency). The point was to understand the systems and tools that are widely used without second thought in real reactor design - like the Monte Carlo methods.
+Four stages of physics simulation and four stages of machine learning, built in parallel, which merge in stage 5 into a neural surrogate model for reactor criticality. Everything is written from scratch using only NumPy and Matplotlib, with no ML frameworks (plotting code was AI-assisted to save time). The point is to understand the methods and tools that are used without a second thought in real reactor design, such as Monte Carlo methods.
 
 ## Progress
 
