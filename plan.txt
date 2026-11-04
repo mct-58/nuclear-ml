@@ -1,0 +1,143 @@
+## Stage 1 — Particle in a magnetic field
+
+- Write a function that takes position and velocity, returns acceleration from the Lorentz force
+- Write a loop that steps position and velocity forward by `dt` using Euler's method, storing every state in an array
+- Plot the trajectory in 3D for a uniform B field along z, with initial velocity perpendicular to it — you should get a circle
+- Write a function that computes total kinetic energy at each stored timestep, and plot it against time — it should be flat, and with Euler it won't be
+- Replace Euler with RK4 (four acceleration evaluations per step, weighted average). Re-plot the energy — it should now be visibly flatter
+- Run the same simulation at three different `dt` values and plot energy drift for each on one set of axes
+- Add a nonzero initial velocity along z and confirm you get a helix
+- Compare your orbit radius against the analytical Larmor radius formula and print the percentage error
+
+**Done when:** your RK4 energy plot is flat to within a fraction of a percent over a few hundred orbits, and your measured radius matches theory.
+
+---
+
+## Stage 1 — Linear regression
+
+- Generate fake data: pick a true slope and intercept, make an x array, compute y, add Gaussian noise
+- Write a function that takes parameters and x, returns predicted y
+- Write a function that takes predictions and true y, returns mean squared error as a single number
+- Derive the derivative of that loss with respect to slope and intercept **on paper**, then write a function returning both
+- Write a loop that repeatedly computes gradients and nudges the parameters against them by a learning rate
+- Store the loss at every iteration and plot it against iteration number — it should decay smoothly
+- Plot your fitted line over the scatter of noisy data
+- Try a learning rate ten times larger and ten times smaller, plot all three loss curves together, and see one diverge
+- Extend to multiple input features using matrix operations instead of scalars
+
+**Done when:** your recovered slope and intercept are close to the true values you chose, and you understand why the large learning rate blew up.
+
+---
+
+## Stage 2 — Decay chains
+
+- Write the population change rate for a single isotope and integrate it with your existing RK4
+- Plot it against the analytical exponential and confirm they overlap
+- Extend the state to a vector of three isotopes in a chain, where each one's loss feeds the next one's gain
+- Plot all three populations on one figure with a log y-axis
+- Plot activity (population times decay constant) rather than raw population and identify secular equilibrium visually
+- Set the parent half-life to be a million times longer than the daughter, keep your fixed timestep, and watch it either crawl or break
+- Implement adaptive timestepping: take one full step, take two half steps, compare, shrink `dt` if they disagree beyond a tolerance
+- Plot your chosen `dt` against time to see the solver automatically speeding up and slowing down
+- Run a real chain of at least five isotopes with actual half-lives from a data table
+
+**Done when:** a five-isotope chain with wildly mismatched half-lives runs in reasonable time and matches known equilibrium ratios.
+
+---
+
+## Stage 2 — Neural network
+
+- Write a forward pass for a fixed two-layer network: matrix multiply, add bias, apply activation, repeat, output one number
+- Write a loss function for the output
+- Derive gradients for all four parameter arrays **on paper**, working backwards from the loss
+- Write a backward pass that returns those four gradient arrays
+- Verify your gradients numerically: nudge one weight by a tiny amount, measure the loss change, compare to your analytical gradient
+- Write the training loop and train it to fit a curve that a straight line cannot, like a sine wave
+- Plot the network output against the true function at several points during training on the same axes
+- Change the hidden layer width and plot final loss against width
+- Swap the activation function for a different one and compare training curves
+
+**Done when:** your numerical gradient check passes for every parameter, and the network visibly fits a curve linear regression couldn't.
+
+---
+
+## Stage 3 — Neutron random walk
+
+- Write a sampler that draws a distance from an exponential distribution given a cross-section
+- Write a sampler that picks a random direction uniformly on a sphere
+- Simulate one neutron: loop of move, then randomly decide scatter or absorb based on probabilities, until it dies or escapes
+- Run ten thousand neutrons in a slab geometry and record what fraction escapes
+- Plot a histogram of the distances travelled and overlay the analytical exponential
+- Plot escape fraction against slab thickness
+- Compute the standard error on your escape fraction and plot it against neutron count on log axes — confirm the slope is minus one half
+- Add a second material region with different cross-sections and handle the boundary crossing
+- Plot 2D projections of a few hundred individual neutron paths
+
+**Done when:** your error-versus-samples plot has the right slope, and escape fraction matches the analytical result for a simple geometry.
+
+---
+
+## Stage 3 — Monte Carlo methods
+
+- Estimate π by sampling points in a square and counting those inside the circle
+- Plot your estimate against sample count and watch it converge
+- Write a general function that estimates any 1D integral by sampling, and test it on something you can integrate by hand
+- Use it on a high-dimensional integral and compare the cost against a grid-based approach
+- Implement importance sampling on an integral where uniform sampling converges slowly, and plot both convergence curves together
+- Go back to your stage 2 network and change the training loop to use random minibatches rather than the full dataset
+- Plot full-batch versus minibatch loss curves together and note the noise
+- Plot final loss against batch size
+
+**Done when:** you can articulate why minibatch gradients still train the network despite being wrong on every individual step.
+
+---
+
+## Stage 4 — Neutron diffusion
+
+- Set up a 1D spatial grid and represent flux as an array over it
+- Write the finite difference approximation to the second derivative as a function on that array
+- Assemble the discretised diffusion operator as a matrix
+- Apply zero-flux boundary conditions at both edges
+- Solve the eigenvalue problem with `numpy.linalg` to get k-effective and the flux shape
+- Plot the fundamental mode flux and compare it against the analytical cosine solution
+- Plot k-effective against slab width and find the critical width numerically
+- Compare your critical width against the analytical buckling result
+- Repeat at several grid resolutions and plot the error against grid spacing on log axes
+- Extend to two spatial dimensions and produce a contour plot of the flux
+
+**Done when:** your critical width matches theory and your error-versus-resolution plot shows the expected convergence order.
+
+---
+
+## Stage 4 — Autograd and convolutions
+
+- Write a scalar value class that stores a number, its gradient, and a reference to the operations that produced it
+- Implement addition and multiplication on it, each recording how to propagate gradient backwards
+- Implement a topological sort over the graph and a backward method that walks it
+- Rebuild your stage 2 network using this class instead of hand-derived gradients, and confirm it trains identically
+- Add more operations until you can express the network cleanly
+- Separately, write a 2D convolution as an explicit sliding window over a NumPy array
+- Apply hand-chosen kernels to an image array and plot the results
+- Note where the code overlaps with your finite difference stencil
+- Implement pooling and assemble a small conv network on a simple image dataset
+
+**Done when:** your autograd version reproduces your hand-derived gradients to numerical precision.
+
+---
+
+## Stage 5 — The merge
+
+- Wrap your diffusion solver so one function call takes parameters and returns k-effective
+- Sweep parameters over a sensible range and save a few thousand input-output pairs to disk
+- Normalise the inputs and outputs, and split into train and test sets
+- Train your from-scratch network to predict k-effective from parameters
+- Plot predicted against true on the test set with a diagonal reference line
+- Time both approaches and quantify the speedup
+- Plot prediction error against how far the input is from the training range
+- For the physics-informed version: add a loss term that penalises violation of the diffusion equation at sampled points
+- Train with far less labelled data and compare against the pure data-driven model on the same test set
+- Plot both models' error against training set size
+
+**Done when:** the surrogate is accurate within the training range and you've honestly characterised where it fails outside it.
+
+---
