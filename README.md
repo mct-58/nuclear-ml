@@ -16,3 +16,21 @@ Learning about Nuclear physics and Machine Learning from scratch simultaneously 
 | 4 | Neutron diffusion, k-eff | Autograd, convolutions | Planned |
 | 5 | Neural surrogate for k-eff | | Planned |
 
+## Running it
+
+Requires Python 3 and NumPy/Matplotlib only.
+
+```bash
+git clone https://github.com/mct-58/nuclear-ml.git
+cd nuclear-ml
+python -m venv .venv
+source .venv/bin/activate      # Windows: .venv\Scripts\activate
+pip install -r requirements.txt
+python Stage1/particalInMagneticField/main.py
+```
+
+Each script runs on its own and displays its plots.
+
+## Development log
+
+Problems encountered, fixes, and validation for each stage are recorded in [LOG.md](LOG.md).
